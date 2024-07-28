@@ -96,6 +96,81 @@ class Docs::CommandView < ApplicationView
         RUBY
       end
 
+      render Docs::VisualCodeExample.new(title: "Command", context: self, premium: @premium) do
+        <<~RUBY
+          Command(class: "flex h-full w-full flex-col overflow-hidden bg-popover text-popover-foreground rounded-lg border shadow-md") do
+            CommandInput(placeholder: "Type a command or search...")
+            CommandList do
+              CommandEmpty { "No results found." }
+              CommandGroup(title: "Components") do
+                components_list.each do |component|
+                  CommandItem(
+                    # class: "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none aria-selected:bg-accent aria-selected:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+                    value: component[:name],
+                    href: component[:path]
+                  ) do
+                    default_icon
+                    plain component[:name]
+                  end
+                end
+              end
+              CommandGroup(title: "Settings") do
+                settings_list.each do |setting|
+                  CommandItem(value: setting[:name], href: setting[:path]) do
+                    default_icon
+                    plain setting[:name]
+                  end
+                end
+              end
+            end
+          end
+        RUBY
+      end
+
+      render Docs::VisualCodeExample.new(title: "With keybinding", context: self, premium: @premium) do
+        <<~RUBY
+          CommandDialog do
+            CommandDialogTrigger(keybindings: ['keydown.ctrl+i@window', 'keydown.meta+i@window']) do
+              p(class: "text-sm text-muted-foreground") do
+                span(class: 'mr-1') { "Press" }
+                ShortcutKey do
+                  span(class: "text-xs") { "⌘" }
+                  plain "J"
+                end
+              end
+            end
+            CommandDialogContent(id: "list") do
+              CommandInput(placeholder: "Search framework...")
+              CommandList do
+                CommandEmpty { "No results found." }
+                CommandGroup(heading: "Suggestions") do
+                  CommandItem(value: "calendar") do
+                    span { "Calendar" }
+                  end
+                  CommandItem(value: "smile") do
+                    span { "Search Emoji" }
+                  end
+                  CommandItem(value: "calculator") do
+                    span { "Calculator" }
+                  end
+                end
+
+                CommandGroup(heading: "Settings") do
+                  CommandItem(value: "profile") do
+                    span { "Profile" }
+                  end
+                  CommandItem(value: "billing") do
+                    span { "Billing" }
+                  end
+                  CommandItem(value: "settings") do
+                    span { "Settings" }
+                  end
+                end
+              end
+            end
+          end
+        RUBY
+      end
       render Docs::ComponentsTable.new(components)
     end
   end
